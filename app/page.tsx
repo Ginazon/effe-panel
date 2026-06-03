@@ -113,7 +113,7 @@ function ProductCard({ code, data, onChange, calculate }: any) {
 
   return (
     <div className="border rounded-lg p-4 bg-white shadow-sm flex flex-col gap-3">
-      <div className="bg-gray-100 h-64 rounded flex items-center justify-center font-bold text-gray-500 relative overflow-hidden border">
+      <div className="bg-gray-100 h-80 rounded flex items-center justify-center font-bold text-gray-500 relative overflow-hidden border">
         {/* Resimler artık dinamik olarak Supabase Storage üzerinden yükleniyor */}
         <img 
           src={imageUrl} 
