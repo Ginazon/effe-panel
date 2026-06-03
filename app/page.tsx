@@ -9,7 +9,7 @@ const supabase = createClient(
 
 // Sabit Ürün Listesi
 const PRODUCT_LIST = {
-  aynalar: ['MD1-100', 'MD1-80M', 'MD1-80C', 'MD2-100', 'MD2-80M', 'MD2-80C', 'MD3-80', 'MD4', 'MD5-70', 'MD6-70', 'MD7-50', 'MD8-50'],
+  aynalar: ['MD1-100', 'MD1-80M', 'MD1-80C', 'MD2-100', 'MD2-80M', 'MD2-80C', 'MD3-80', 'MD4-80', 'MD5-70', 'MD6-70', 'MD7-50', 'MD8-50'],
   sehpalar: ['SP1-A', 'SP2-C', 'SP3-CM', 'SP4-CC', 'SP5-C']
 };
 
@@ -39,7 +39,6 @@ export default function Home() {
     }));
   };
 
-  // Desi ve Kargo Matrahı Hesaplama Fonksiyonu
   const calculateDesi = (prod: ProductData) => {
     const en = parseFloat(prod?.en) || 0;
     const boy = parseFloat(prod?.boy) || 0;
@@ -47,12 +46,11 @@ export default function Home() {
     const agirlik = parseFloat(prod?.agirlik) || 0;
 
     const desi = (en * boy * kalinlik) / 3000;
-    const kargoEsas = Math.max(desi, agirlik); // Hangisi büyükse kargoda o baz alınır
+    const kargoEsas = Math.max(desi, agirlik);
 
     return { desi: desi.toFixed(2), kargoEsas: kargoEsas.toFixed(2) };
   };
 
-  // Güncelleme (Kaydetme) Fonksiyonu
   const handleSave = async () => {
     setSaving(true);
     const { error } = await supabase.from('price_list').upsert({ id: 1, data: formState });
@@ -80,7 +78,6 @@ export default function Home() {
           </button>
         </div>
 
-        {/* BÖLÜM 1: DOĞAL AHŞAP ÇERÇEVELI AYNALAR */}
         <section className="mb-12">
           <h2 className="text-xl font-semibold bg-gray-100 p-3 rounded mb-4 text-gray-700 border-l-4 border-amber-500">
             Doğal Ahşap Çerçeveli Aynalar (PDF 1)
@@ -92,7 +89,6 @@ export default function Home() {
           </div>
         </section>
 
-        {/* BÖLÜM 2: DOĞAL AHŞAP VE CAMLI SEHPALAR */}
         <section>
           <h2 className="text-xl font-semibold bg-gray-100 p-3 rounded mb-4 text-gray-700 border-l-4 border-blue-500">
             Doğal Ahşap ve Camlı Sehpa Modelleri (PDF 2)
@@ -108,19 +104,23 @@ export default function Home() {
   );
 }
 
-// Ortak Ürün Kartı Bileşeni
 function ProductCard({ code, data, onChange, calculate }: any) {
   const { desi, kargoEsas } = calculate(data);
+  
+  // Supabase projenizin temel URL yapısını oluşturuyoruz
+  const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
+  const imageUrl = `${supabaseUrl}/storage/v1/object/public/product-images/${code.toLowerCase()}.jpeg`;
+
   return (
     <div className="border rounded-lg p-4 bg-white shadow-sm flex flex-col gap-3">
-      <div className="bg-gray-200 h-150 rounded flex items-center justify-center font-bold text-gray-500 relative overflow-hidden">
-        {/* Hatalı kısım düzeltildi: Resim yoksa yer tutucu (placeholder) yükler */}
+      <div className="bg-gray-100 h-64 rounded flex items-center justify-center font-bold text-gray-500 relative overflow-hidden border">
+        {/* Resimler artık dinamik olarak Supabase Storage üzerinden yükleniyor */}
         <img 
-          src={`/images/${code.toLowerCase()}.jpeg`} 
+          src={imageUrl} 
           alt={code} 
-          className="object-cover w-full h-full"
+          className="object-contain w-full h-full p-1"
           onError={(e) => {
-            e.currentTarget.src = 'https://via.placeholder.com/300x200?text=Resim+Yok';
+            e.currentTarget.src = 'https://via.placeholder.com/300x250?text=Resim+Bulunamadi';
           }} 
         />
         <span className="absolute top-2 left-2 bg-black/70 text-white text-xs px-2 py-1 rounded">{code}</span>
